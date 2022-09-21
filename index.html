@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rock, Paper, Scissor, Lizard, Spock Game</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80%;
+        margin: 0 auto;
+        flex-wrap: wrap;
+      }
+
+      /* Score style */
+      #result {
+        flex: 1 100%;
+      }
+
+      #round-message,
+      #score {
+        text-align: center;
+      }
+
+      #round-message {
+        font-size: 1.5em;
+        text-transform: capitalize;
+      }
+
+      #score {
+        font-size: 3em;
+        margin-bottom: 10px;
+      }
+      /* Player style */
+      .players {
+        display: inline-flex;
+        flex-wrap: wrap;
+        flex: 1;
+        padding: 10px 25px;
+      }
+
+      .selected-option,
+      .name,
+      .available-options {
+        display: inline-flex;
+        flex: 1 100%;
+        padding: 15px 0;
+      }
+
+      .selected-option,
+      .name {
+        justify-content: center;
+      }
+
+      .name {
+        font-size: 1.8em;
+        color: #f44336;
+        font-weight: 600;
+      }
+
+      /* Options Style */
+      .available-options {
+        justify-content: space-between;
+      }
+
+      .option {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 75px;
+        height: 75px;
+        padding: 10px;
+        border-radius: 50%;
+        border: 1px solid #f44336;
+        box-shadow: 0 0 3px;
+        cursor: pointer;
+      }
+
+      .option.active {
+        border-color: blue;
+      }
+
+      .option:hover > img {
+        transform: scale(1.1);
+      }
+
+      .option > img {
+        width: 70%;
+        transition: all 0.2s ease;
+      }
+
+      .selected-option > .option {
+        width: 110px;
+        height: 110px;
+      }
+
+      /* Rotate the scissor of second player */
+      #player2 .option > img[alt="Scissor"] {
+        transform: rotate(180deg);
+      }
+
+      #player2 .option:hover > img[alt="Scissor"] {
+        transform: rotate(180deg) scale(1.1);
+      }
+
+      #player2 .option {
+        cursor: not-allowed;
+        background-color: #80cbc4;
+      }
+      /* Reset button */
+      .reset {
+        display: inline-flex;
+        flex: 1 100%;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .reset > span {
+        font-size: 1.8em;
+        cursor: pointer;
+        border: 1px solid red;
+        padding: 10px 15px;
+        background-color: #f44336;
+        box-shadow: 0 0 3px;
+        color: #fff;
+        transition: all 0.2s ease;
+      }
+
+      .reset > span:hover {
+        color: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <!-- Result -->
+      <section id="result">
+        <div id="score">
+          <span id="player1-score" class="points">0</span>
+          :
+          <span id="player2-score" class="points">0</span>
+        </div>
+        <p id="round-message">Choose your option</p>
+      </section>
+
+      <!-- Player 1 area -->
+      <section id="player1" class="players">
+        <span class="name">Player1</span>
+        <div class="selected-option">
+          <span class="option" data-index="0"> </span>
+        </div>
+        <div class="available-options">
+          <span class="option" data-index="0">
+            <img src="assets/lizard.jpg" alt="Lizard" title="Lizard" />
+          </span>
+          <span class="option" data-index="1">
+            <img src="assets/paper.jpg" alt="Paper" title="Paper" />
+          </span>
+          <span class="option" data-index="2">
+            <img src="assets/rock.jpg" alt="Rock" title="Rock" />
+          </span>
+          <span class="option" data-index="3">
+            <img src="assets/scissor.jpg" alt="Scissor" title="Scissor" />
+          </span>
+          <span class="option" data-index="4">
+            <img src="assets/spock.png" alt="Spock" title="Spock" />
+          </span>
+        </div>
+      </section>
+
+      <!-- Player 2 area -->
+      <section id="player2" class="players">
+        <span class="name">Bot</span>
+        <div class="selected-option">
+          <span class="option" data-index="0"> </span>
+        </div>
+        <div class="available-options">
+          <span class="option" data-index="0">
+            <img src="assets/lizard.jpg" alt="Lizard" title="Lizard" />
+          </span>
+          <span class="option" data-index="1">
+            <img src="assets/paper.jpg" alt="Paper" title="Paper" />
+          </span>
+          <span class="option" data-index="2">
+            <img src="assets/rock.jpg" alt="Rock" title="Rock" />
+          </span>
+          <span class="option" data-index="3">
+            <img src="assets/scissor.jpg" alt="Scissor" title="Scissor" />
+          </span>
+          <span class="option" data-index="4">
+            <img src="assets/spock.png" alt="Spock" title="Spock" />
+          </span>
+        </div>
+      </section>
+
+      <!-- Reset button -->
+      <span class="reset"><span>Reset</span></span>
+    </main>
+    <script>
+      //Order in which options are available
+      const arr = [
+        {
+          image: "lizard.jpg",
+          name: "Lizard",
+        },
+        {
+          image: "paper.jpg",
+          name: "Paper",
+        },
+        {
+          image: "rock.jpg",
+          name: "Rock",
+        },
+        {
+          image: "scissor.jpg",
+          name: "Scissor",
+        },
+        {
+          image: "spock.png",
+          name: "Spock",
+        },
+      ];
+
+      //Rule for who has win over whom
+      const rule = {
+        Lizard: ["Spock", "Paper"],
+
+        Paper: ["Rock", "Spock"],
+
+        Rock: ["Lizard", "Scissor"],
+
+        Scissor: ["Paper", "Lizard"],
+
+        Spock: ["Scissor", "Rock"],
+      };
+
+      //Folder in which images are stored
+      const imageFolderPath = "assets";
+      //All the options of player 1
+      const player1Options = document.querySelectorAll(
+        "#player1 .available-options .option"
+      );
+
+      //All the options of bot
+      const botOptions = document.querySelectorAll(
+        "#player2 .available-options .option"
+      );
+
+      //Where selected option of player 1 will be shown
+      const playerShowArea = document.querySelector(
+        "#player1 .selected-option .option"
+      );
+
+      //Where selected option of bot will  be  shown
+      const botShowArea = document.querySelector(
+        "#player2 .selected-option .option"
+      );
+
+      //Player 1 and bot score
+      const player1Score = document.querySelector("#player1-score");
+      const player2Score = document.querySelector("#player2-score");
+
+      //Where message will be shown
+      const roundMessage = document.querySelector("#round-message");
+      player1Options.forEach((e) => {
+        e.addEventListener("click", () => {
+          play(e);
+        });
+      });
+      const play = (e) => {
+        //Get the index of the option selected by player
+        const player1 = e.getAttribute("data-index");
+
+        //Number of options available
+        const length = arr.length;
+
+        //Generate a random number between number of options available for bot
+        const player2 = Math.floor(Math.random() * length);
+
+        //Show the player1 selected option and highlight it
+        showPlayerOption(player1, playerShowArea);
+        highlightSelectedOption(player1, player1Options);
+
+        //Show the bot selected option
+        showPlayerOption(player2, botShowArea);
+        highlightSelectedOption(player2, botOptions);
+
+        //Calculate the result
+        calculateScore(player1, player2);
+      };
+      //Generate an image element
+      const generateImgElement = (index) => {
+        const { image, name } = arr[index];
+        const imgElement = document.createElement("img");
+        imgElement.src = `${imageFolderPath}/${image}`;
+        imgElement.alt = name;
+        imgElement.title = name;
+        return imgElement;
+      };
+
+      //Show selected option
+      const showPlayerOption = (index, showArea) => {
+        //Append the generated image to the show area
+        const imgElement = generateImgElement(index);
+        showArea.innerHTML = "";
+        showArea.append(imgElement);
+      };
+
+      const highlightSelectedOption = (index, options) => {
+        //Remove the active class from all options
+        options.forEach((e) => {
+          e.classList.remove("active");
+        });
+
+        //Add the active class to the selected option
+        options[index].classList.add("active");
+      };
+      //Change the score
+      const addScore = (player) => {
+        const { innerHTML } = player;
+        player.innerHTML = Number(innerHTML) + 1;
+      };
+
+      //Show the message
+      const showMessage = (msg) => {
+        roundMessage.innerHTML = "";
+        roundMessage.innerHTML = msg;
+      };
+
+      const calculateScore = (player1, player2) => {
+        //Player 1 choice
+        const player1Choice = arr[player1].name;
+
+        //Bot choice
+        const player2Choice = arr[player2].name;
+
+        //Get player 1 selected choice rule
+        const player1Strength = rule[player1Choice];
+
+        //Check the case and who wins the round
+        if (player1Choice === player2Choice) {
+          showMessage("draw");
+        } else if (player1Strength.includes(player2Choice)) {
+          //Update the score and show message who won the round
+          addScore(player1Score);
+          showMessage("player 1 wins");
+        } else {
+          //Update the score and show message who won the round
+          addScore(player2Score);
+          showMessage("Bot wins");
+        }
+      };
+      const reset = () => {
+        botShowArea.innerHTML = "";
+        playerShowArea.innerHTML = "";
+        roundMessage.innerHTML = "Choose your option";
+        player2Score.innerHTML = "0";
+        player1Score.innerHTML = "0";
+        player1Options.forEach((e) => {
+          e.classList.remove("active");
+        });
+        botOptions.forEach((e) => {
+          e.classList.remove("active");
+        });
+      };
+
+      document.querySelector(".reset").addEventListener("click", reset);
+    </script>
+  </body>
+</html>
